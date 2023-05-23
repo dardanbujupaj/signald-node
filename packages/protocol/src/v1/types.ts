@@ -4,6 +4,7 @@ import {
   JsonStickerPackOperationMessage,
   JsonQuotedAttachment,
 } from "../v0/types";
+/** Wraps all incoming messages sent to the client after a v1 subscribe request is issued */
 export type ClientMessageWrapper = {
   type: string;
   version: string;
@@ -75,15 +76,18 @@ export type IncomingMessage = {
   decryption_error_message: DecryptionErrorMessage;
 };
 
+/** prior attempt to indicate signald connectivity state. WebSocketConnectionState messages will be delivered at the  same time as well as in other parts of the websocket lifecycle. */
 export type ListenerState = {
   connected: boolean;
 };
 
+/** indicates when the websocket connection state to the signal server has changed */
 export type WebSocketConnectionState = {
   state: string;
   socket: string;
 };
 
+/** Broadcast to subscribed clients when there is a state change from the storage service */
 export type StorageChange = {
   version: number;
 };
@@ -131,6 +135,7 @@ export type InvalidAttachmentError = {
   message: string;
 };
 
+/** an internal error in signald has occurred. typically these are things that "should never happen" such as issues saving to the local disk, but it is also the default error type and may catch some things that should have their own error type. If you find tht your code is depending on the exception list for any particular behavior, please file an issue so we can pull those errors out to a separate error type: https://gitlab.com/signald/signald/-/issues/new */
 export type InternalError = {
   exceptions: string[];
   message: string;
@@ -157,6 +162,7 @@ export type AttachmentTooLargeError = {
   message: string;
 };
 
+/** Indicates the server rejected our credentials or a failed group update. Typically means the linked device was removed by the primary device, or that the account was re-registered. For group updates, this can indicate that we lack permissions. */
 export type AuthorizationFailedError = {
   message: string;
 };
@@ -172,10 +178,12 @@ export type ProofRequiredError = {
   retry_after: number;
 };
 
+/** indicates signald received an http 500 status code from the server */
 export type SignalServerError = {
   message: string;
 };
 
+/** react to a previous message */
 export type ReactRequest = {
   username: string;
   recipientAddress?: JsonAddress;
@@ -199,11 +207,13 @@ export type JsonVersionMessage = {
   commit: string;
 };
 
+/** Accept a v2 group invitation. Note that you must have a profile name set to join groups. */
 export type AcceptInvitationRequest = {
   account: string;
   groupID: string;
 };
 
+/** Information about a Signal group */
 export type JsonGroupV2Info = {
   id: string;
   revision: number;
@@ -228,10 +238,12 @@ export type OwnProfileKeyDoesNotExistError = {
   message: string;
 };
 
+/** Indicates the server rejected our group update. This can be due to errors such as trying to add a user that's already in the group. */
 export type GroupPatchNotAcceptedError = {
   message: string;
 };
 
+/** approve a request to join a group */
 export type ApproveMembershipRequest = {
   account: string;
   groupID: string;
@@ -242,6 +254,7 @@ export type GroupVerificationError = {
   message: string;
 };
 
+/** Query the server for the latest state of a known group. If the account is not a member of the group, an UnknownGroupError is returned. */
 export type GetGroupRequest = {
   account: string;
   groupID: string;
@@ -252,6 +265,7 @@ export type InvalidGroupStateError = {
   message: string;
 };
 
+/** list all linked devices on a Signal account */
 export type GetLinkedDevicesRequest = {
   account: string;
 };
@@ -260,6 +274,7 @@ export type LinkedDevices = {
   devices: DeviceInfo[];
 };
 
+/** Join a group using the a signal.group URL. Note that you must have a profile name set to join groups. */
 export type JoinGroupRequest = {
   account: string;
   uri: string;
@@ -283,11 +298,13 @@ export type GroupNotActiveError = {
   message: string;
 };
 
+/** Remove a linked device from the Signal account. Only allowed when the local device id is 1 */
 export type RemoveLinkedDeviceRequest = {
   account: string;
   deviceId: number;
 };
 
+/** modify a group. Note that only one modification action may be performed at once */
 export type UpdateGroupRequest = {
   account: string;
   groupID: string;
@@ -303,11 +320,13 @@ export type UpdateGroupRequest = {
   announcements?: string;
 };
 
+/** A generic type that is used when the group version is not known */
 export type GroupInfo = {
   v1: JsonGroupInfo;
   v2: JsonGroupV2Info;
 };
 
+/** returned in response to use v1 groups, which are no longer supported */
 export type UnsupportedGroupError = {
   message: string;
 };
@@ -326,6 +345,7 @@ export type InvalidBase64Error = {
   message: string;
 };
 
+/** Resolve a partial JsonAddress with only a number or UUID to one with both. Anywhere that signald accepts a JsonAddress will except a partial, this is a convenience function for client authors, mostly because signald doesn't resolve all the partials it returns. */
 export type ResolveAddressRequest = {
   account: string;
   partial: JsonAddress;
@@ -344,12 +364,14 @@ export type MarkReadRequest = {
   when?: number;
 };
 
+/** Get all information available about a user */
 export type GetProfileRequest = {
   account: string;
   async?: boolean;
   address: JsonAddress;
 };
 
+/** Information about a Signal user */
 export type Profile = {
   name: string;
   avatar: string;
@@ -406,6 +428,7 @@ export type LeaveGroupRequest = {
   groupID: string;
 };
 
+/** Generate a linking URI. Typically this is QR encoded and scanned by the primary device. Submit the returned session_id with a finish_link request. */
 export type GenerateLinkingURIRequest = {
   server?: string;
 };
@@ -415,12 +438,14 @@ export type LinkingURI = {
   session_id: string;
 };
 
+/** After a linking URI has been requested, finish_link must be called with the session_id provided with the URI. it will return information about the new account once the linking process is completed by the other device and the new account is setup. Note that the account setup process can sometimes take some time, if rapid userfeedback is required after scanning, use wait_for_scan first, then finish setup with finish_link. */
 export type FinishLinkRequest = {
   overwrite?: boolean;
   device_name?: string;
   session_id?: string;
 };
 
+/** A local account in signald */
 export type Account = {
   address: JsonAddress;
   pending: Boolean;
@@ -442,11 +467,13 @@ export type ScanTimeoutError = {
   message: string;
 };
 
+/** Link a new device to a local Signal account */
 export type AddLinkedDeviceRequest = {
   account: string;
   uri: string;
 };
 
+/** begin the account registration process by requesting a phone number verification code. when the code is received, submit it with a verify request */
 export type RegisterRequest = {
   account: string;
   voice?: boolean;
@@ -459,6 +486,7 @@ export type CaptchaRequiredError = {
   message: string;
 };
 
+/** verify an account's phone number with a code after registering, completing the account creation process */
 export type VerifyRequest = {
   account: string;
   code: string;
@@ -477,16 +505,19 @@ export type AccountLockedError = {
   message: string;
 };
 
+/** Get information about a known keys for a particular address */
 export type GetIdentitiesRequest = {
   account: string;
   address: JsonAddress;
 };
 
+/** a list of identity keys associated with a particular address */
 export type IdentityKeyList = {
   address: JsonAddress;
   identities: IdentityKey[];
 };
 
+/** Trust another user's safety number using either the QR code data or the safety number text */
 export type TrustRequest = {
   account: string;
   address: JsonAddress;
@@ -507,11 +538,13 @@ export type InvalidFingerprintError = {
   message: string;
 };
 
+/** delete all account data signald has on disk, and optionally delete the account from the server as well. Note that this is not "unlink" and will delete the entire account, even from a linked device. */
 export type DeleteAccountRequest = {
   account: string;
   server?: boolean;
 };
 
+/** send a typing started or stopped message */
 export type TypingRequest = {
   account: string;
   address?: JsonAddress;
@@ -524,12 +557,14 @@ export type InvalidGroupError = {
   message: string;
 };
 
+/** reset a session with a particular user */
 export type ResetSessionRequest = {
   account: string;
   address: JsonAddress;
   timestamp?: number;
 };
 
+/** Request other devices on the account send us their group list, syncable config and contact list. */
 export type RequestSyncRequest = {
   groups?: boolean;
   configuration?: boolean;
@@ -539,12 +574,14 @@ export type RequestSyncRequest = {
   account: string;
 };
 
+/** return all local accounts */
 export type ListAccountsRequest = {};
 
 export type AccountList = {
   accounts: Account[];
 };
 
+/** Get information about a group from a signal.group link */
 export type GroupLinkInfoRequest = {
   account: string;
   uri: string;
@@ -554,6 +591,7 @@ export type GroupLinkNotActiveError = {
   message: string;
 };
 
+/** update information about a local contact */
 export type UpdateContactRequest = {
   account: string;
   address: JsonAddress;
@@ -562,6 +600,7 @@ export type UpdateContactRequest = {
   inbox_position?: number;
 };
 
+/** Set the message expiration timer for a thread. Expiration must be specified in seconds, set to 0 to disable timer */
 export type SetExpirationRequest = {
   account: string;
   address?: JsonAddress;
@@ -569,11 +608,13 @@ export type SetExpirationRequest = {
   expiration: number;
 };
 
+/** set this device's name. This will show up on the mobile device on the same account under settings -> linked devices */
 export type SetDeviceNameRequest = {
   account: string;
   device_name?: string;
 };
 
+/** get all known identity keys */
 export type GetAllIdentities = {
   account: string;
 };
@@ -582,14 +623,17 @@ export type AllIdentityKeyList = {
   identity_keys: IdentityKeyList[];
 };
 
+/** receive incoming messages. After making a subscribe request, incoming messages will be sent to the client encoded as ClientMessageWrapper. Send an unsubscribe request or disconnect from the socket to stop receiving messages. */
 export type SubscribeRequest = {
   account: string;
 };
 
+/** See subscribe for more info */
 export type UnsubscribeRequest = {
   account: string;
 };
 
+/** delete a message previously sent */
 export type RemoteDeleteRequest = {
   account: string;
   address?: JsonAddress;
@@ -598,6 +642,7 @@ export type RemoteDeleteRequest = {
   members?: JsonAddress[];
 };
 
+/** add a new server to connect to. Returns the new server's UUID. */
 export type AddServerRequest = {
   server: Server;
 };
@@ -612,6 +657,7 @@ export type RemoveServerRequest = {
   uuid?: string;
 };
 
+/** send a mobilecoin payment */
 export type SendPaymentRequest = {
   account: string;
   address: JsonAddress;
@@ -619,6 +665,7 @@ export type SendPaymentRequest = {
   when?: number;
 };
 
+/** Retrieves the remote config (feature flags) from the server. */
 export type RemoteConfigRequest = {
   account: string;
 };
@@ -627,6 +674,7 @@ export type RemoteConfigList = {
   config: RemoteConfig[];
 };
 
+/** deny a request to join a group */
 export type RefuseMembershipRequest = {
   account: string;
   members: JsonAddress[];
@@ -640,19 +688,23 @@ export type SubmitChallengeRequest = {
   captcha_token?: string;
 };
 
+/** Determine whether an account identifier is registered on the Signal service. */
 export type IsIdentifierRegisteredRequest = {
   account: string;
   identifier: string;
 };
 
+/** A message containing a single boolean, usually as a response */
 export type BooleanMessage = {
   value: boolean;
 };
 
+/** An optional part of the linking process. Intended to be called after displaying the QR code, will return quickly after the user scans the QR code. finish_link must be called after wait_for_scan returns a non-error */
 export type WaitForScanRequest = {
   session_id?: string;
 };
 
+/** Query the server for group revision history. The history contains information about the changes between each revision and the user that made the change. */
 export type GetGroupRevisionPagesRequest = {
   account: string;
   group_id: string;
@@ -660,11 +712,13 @@ export type GetGroupRevisionPagesRequest = {
   include_first_revision?: boolean;
 };
 
+/** The result of fetching a group's history along with paging data. */
 export type GroupHistoryPage = {
   results: GroupHistoryEntry[];
   paging_data: PagingData;
 };
 
+/** Sends a sync message to the account's devices */
 export type SendSyncMessageRequest = {
   account: string;
   view_once_open_message?: JsonViewOnceOpenMessage;
@@ -680,12 +734,14 @@ export type JsonSendMessageResult = {
   proof_required_failure: ProofRequiredError;
 };
 
+/** Bans users from a group. This works even if the users aren't in the group. If they are currently in the group, they will also be removed. */
 export type BanUserRequest = {
   account: string;
   group_id: string;
   users: JsonAddress[];
 };
 
+/** Unbans users from a group. */
 export type UnbanUserRequest = {
   account: string;
   group_id: string;
@@ -773,6 +829,7 @@ export type DecryptionErrorMessage = {
   ratchet_key: string;
 };
 
+/** represents a file attached to a message. When sending, only `filename` is required. */
 export type JsonAttachment = {
   contentType: string;
   id: string;
@@ -789,6 +846,7 @@ export type JsonAttachment = {
   blurhash: string;
 };
 
+/** A quote is a reply to a previous message. ID is the sent time of the message being replied to */
 export type JsonQuote = {
   id: number;
   author: JsonAddress;
@@ -803,6 +861,7 @@ export type JsonMention = {
   length: number;
 };
 
+/** metadata about one of the links in a message */
 export type JsonPreview = {
   url: string;
   title: string;
@@ -818,6 +877,7 @@ export type JsonReaction = {
   targetSentTimestamp: number;
 };
 
+/** group access control settings. Options for each controlled action are: UNKNOWN, ANY, MEMBER, ADMINISTRATOR, UNSATISFIABLE and UNRECOGNIZED */
 export type GroupAccessControl = {
   link: string;
   attributes: string;
@@ -835,6 +895,7 @@ export type BannedGroupMember = {
   timestamp: number;
 };
 
+/** Represents a group change made by a user. This can also represent request link invites. Only the fields relevant to the group change performed will be set. Note that in signald, group changes are currently only received from incoming messages from a message subscription. */
 export type GroupChange = {
   editor: JsonAddress;
   revision: number;
@@ -866,6 +927,7 @@ export type DeviceInfo = {
   lastSeen: number;
 };
 
+/** information about a legacy group */
 export type JsonGroupInfo = {
   groupId: string;
   members: JsonAddress[];
@@ -884,6 +946,7 @@ export type Capabilities = {
   change_number: boolean;
 };
 
+/** a Signal server */
 export type Server = {
   uuid: string;
   proxy: string;
@@ -902,11 +965,13 @@ export type Server = {
   ias_ca: string;
 };
 
+/** details about a MobileCoin payment */
 export type Payment = {
   receipt: string;
   note: string;
 };
 
+/** A remote config (feature flag) entry. */
 export type RemoteConfig = {
   name: string;
   value: string;
@@ -927,6 +992,7 @@ export type JsonViewOnceOpenMessage = {
   timestamp: number;
 };
 
+/** Responses to message requests from unknown users or groups */
 export type JsonMessageRequestResponseMessage = {
   person: JsonAddress;
   groupId: string;

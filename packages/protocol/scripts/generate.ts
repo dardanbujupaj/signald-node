@@ -61,6 +61,7 @@ function sanitizeFieldName(name: string) {
 
 async function generateType(name: string, typeDefinition: TypeDefinition) {
   const typeFile = `
+${typeDefinition.doc ? `/** ${typeDefinition.doc} */` : ""}
 export type ${name} = {
 ${Object.entries(typeDefinition.fields)
   .map(([fieldName, fieldDefinition]) => {
@@ -82,6 +83,7 @@ async function generateAction(
   actionDefinition: ActionDefinition
 ) {
   const actionFile = `
+${actionDefinition.doc ? `/** ${actionDefinition.doc} */` : ""}
 export const ${name} = async (client: Client, data: ${
     actionDefinition.request
   }) => {

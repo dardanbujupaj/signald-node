@@ -83,6 +83,7 @@ export const send = async (client: Client, data: SendRequest) => {
   return client.submit<SendResponse>(request);
 };
 
+/** react to a previous message */
 export const react = async (client: Client, data: ReactRequest) => {
   const request = {
     ...data,
@@ -103,6 +104,7 @@ export const version = async (client: Client, data: VersionRequest) => {
   return client.submit<JsonVersionMessage>(request);
 };
 
+/** Accept a v2 group invitation. Note that you must have a profile name set to join groups. */
 export const accept_invitation = async (
   client: Client,
   data: AcceptInvitationRequest
@@ -116,6 +118,7 @@ export const accept_invitation = async (
   return client.submit<JsonGroupV2Info>(request);
 };
 
+/** approve a request to join a group */
 export const approve_membership = async (
   client: Client,
   data: ApproveMembershipRequest
@@ -129,6 +132,7 @@ export const approve_membership = async (
   return client.submit<JsonGroupV2Info>(request);
 };
 
+/** Query the server for the latest state of a known group. If the account is not a member of the group, an UnknownGroupError is returned. */
 export const get_group = async (client: Client, data: GetGroupRequest) => {
   const request = {
     ...data,
@@ -139,6 +143,7 @@ export const get_group = async (client: Client, data: GetGroupRequest) => {
   return client.submit<JsonGroupV2Info>(request);
 };
 
+/** list all linked devices on a Signal account */
 export const get_linked_devices = async (
   client: Client,
   data: GetLinkedDevicesRequest
@@ -152,6 +157,7 @@ export const get_linked_devices = async (
   return client.submit<LinkedDevices>(request);
 };
 
+/** Join a group using the a signal.group URL. Note that you must have a profile name set to join groups. */
 export const join_group = async (client: Client, data: JoinGroupRequest) => {
   const request = {
     ...data,
@@ -162,6 +168,7 @@ export const join_group = async (client: Client, data: JoinGroupRequest) => {
   return client.submit<JsonGroupJoinInfo>(request);
 };
 
+/** Remove a linked device from the Signal account. Only allowed when the local device id is 1 */
 export const remove_linked_device = async (
   client: Client,
   data: RemoveLinkedDeviceRequest
@@ -175,6 +182,7 @@ export const remove_linked_device = async (
   return client.submit(request);
 };
 
+/** modify a group. Note that only one modification action may be performed at once */
 export const update_group = async (
   client: Client,
   data: UpdateGroupRequest
@@ -198,6 +206,7 @@ export const set_profile = async (client: Client, data: SetProfile) => {
   return client.submit(request);
 };
 
+/** Resolve a partial JsonAddress with only a number or UUID to one with both. Anywhere that signald accepts a JsonAddress will except a partial, this is a convenience function for client authors, mostly because signald doesn't resolve all the partials it returns. */
 export const resolve_address = async (
   client: Client,
   data: ResolveAddressRequest
@@ -221,6 +230,7 @@ export const mark_read = async (client: Client, data: MarkReadRequest) => {
   return client.submit(request);
 };
 
+/** Get all information available about a user */
 export const get_profile = async (client: Client, data: GetProfileRequest) => {
   const request = {
     ...data,
@@ -277,6 +287,7 @@ export const leave_group = async (client: Client, data: LeaveGroupRequest) => {
   return client.submit<GroupInfo>(request);
 };
 
+/** Generate a linking URI. Typically this is QR encoded and scanned by the primary device. Submit the returned session_id with a finish_link request. */
 export const generate_linking_uri = async (
   client: Client,
   data: GenerateLinkingURIRequest
@@ -290,6 +301,7 @@ export const generate_linking_uri = async (
   return client.submit<LinkingURI>(request);
 };
 
+/** After a linking URI has been requested, finish_link must be called with the session_id provided with the URI. it will return information about the new account once the linking process is completed by the other device and the new account is setup. Note that the account setup process can sometimes take some time, if rapid userfeedback is required after scanning, use wait_for_scan first, then finish setup with finish_link. */
 export const finish_link = async (client: Client, data: FinishLinkRequest) => {
   const request = {
     ...data,
@@ -300,6 +312,7 @@ export const finish_link = async (client: Client, data: FinishLinkRequest) => {
   return client.submit<Account>(request);
 };
 
+/** Link a new device to a local Signal account */
 export const add_device = async (
   client: Client,
   data: AddLinkedDeviceRequest
@@ -313,6 +326,7 @@ export const add_device = async (
   return client.submit(request);
 };
 
+/** begin the account registration process by requesting a phone number verification code. when the code is received, submit it with a verify request */
 export const register = async (client: Client, data: RegisterRequest) => {
   const request = {
     ...data,
@@ -323,6 +337,7 @@ export const register = async (client: Client, data: RegisterRequest) => {
   return client.submit<Account>(request);
 };
 
+/** verify an account's phone number with a code after registering, completing the account creation process */
 export const verify = async (client: Client, data: VerifyRequest) => {
   const request = {
     ...data,
@@ -333,6 +348,7 @@ export const verify = async (client: Client, data: VerifyRequest) => {
   return client.submit<Account>(request);
 };
 
+/** Get information about a known keys for a particular address */
 export const get_identities = async (
   client: Client,
   data: GetIdentitiesRequest
@@ -346,6 +362,7 @@ export const get_identities = async (
   return client.submit<IdentityKeyList>(request);
 };
 
+/** Trust another user's safety number using either the QR code data or the safety number text */
 export const trust = async (client: Client, data: TrustRequest) => {
   const request = {
     ...data,
@@ -356,6 +373,7 @@ export const trust = async (client: Client, data: TrustRequest) => {
   return client.submit(request);
 };
 
+/** delete all account data signald has on disk, and optionally delete the account from the server as well. Note that this is not "unlink" and will delete the entire account, even from a linked device. */
 export const delete_account = async (
   client: Client,
   data: DeleteAccountRequest
@@ -369,6 +387,7 @@ export const delete_account = async (
   return client.submit(request);
 };
 
+/** send a typing started or stopped message */
 export const typing = async (client: Client, data: TypingRequest) => {
   const request = {
     ...data,
@@ -379,6 +398,7 @@ export const typing = async (client: Client, data: TypingRequest) => {
   return client.submit(request);
 };
 
+/** reset a session with a particular user */
 export const reset_session = async (
   client: Client,
   data: ResetSessionRequest
@@ -392,6 +412,7 @@ export const reset_session = async (
   return client.submit<SendResponse>(request);
 };
 
+/** Request other devices on the account send us their group list, syncable config and contact list. */
 export const request_sync = async (
   client: Client,
   data: RequestSyncRequest
@@ -405,6 +426,7 @@ export const request_sync = async (
   return client.submit(request);
 };
 
+/** return all local accounts */
 export const list_accounts = async (
   client: Client,
   data: ListAccountsRequest
@@ -418,6 +440,7 @@ export const list_accounts = async (
   return client.submit<AccountList>(request);
 };
 
+/** Get information about a group from a signal.group link */
 export const group_link_info = async (
   client: Client,
   data: GroupLinkInfoRequest
@@ -431,6 +454,7 @@ export const group_link_info = async (
   return client.submit<JsonGroupJoinInfo>(request);
 };
 
+/** update information about a local contact */
 export const update_contact = async (
   client: Client,
   data: UpdateContactRequest
@@ -444,6 +468,7 @@ export const update_contact = async (
   return client.submit<Profile>(request);
 };
 
+/** Set the message expiration timer for a thread. Expiration must be specified in seconds, set to 0 to disable timer */
 export const set_expiration = async (
   client: Client,
   data: SetExpirationRequest
@@ -457,6 +482,7 @@ export const set_expiration = async (
   return client.submit<SendResponse>(request);
 };
 
+/** set this device's name. This will show up on the mobile device on the same account under settings -> linked devices */
 export const set_device_name = async (
   client: Client,
   data: SetDeviceNameRequest
@@ -470,6 +496,7 @@ export const set_device_name = async (
   return client.submit(request);
 };
 
+/** get all known identity keys */
 export const get_all_identities = async (
   client: Client,
   data: GetAllIdentities
@@ -483,6 +510,7 @@ export const get_all_identities = async (
   return client.submit<AllIdentityKeyList>(request);
 };
 
+/** receive incoming messages. After making a subscribe request, incoming messages will be sent to the client encoded as ClientMessageWrapper. Send an unsubscribe request or disconnect from the socket to stop receiving messages. */
 export const subscribe = async (client: Client, data: SubscribeRequest) => {
   const request = {
     ...data,
@@ -493,6 +521,7 @@ export const subscribe = async (client: Client, data: SubscribeRequest) => {
   return client.submit(request);
 };
 
+/** See subscribe for more info */
 export const unsubscribe = async (client: Client, data: UnsubscribeRequest) => {
   const request = {
     ...data,
@@ -503,6 +532,7 @@ export const unsubscribe = async (client: Client, data: UnsubscribeRequest) => {
   return client.submit(request);
 };
 
+/** delete a message previously sent */
 export const remote_delete = async (
   client: Client,
   data: RemoteDeleteRequest
@@ -516,6 +546,7 @@ export const remote_delete = async (
   return client.submit<SendResponse>(request);
 };
 
+/** add a new server to connect to. Returns the new server's UUID. */
 export const add_server = async (client: Client, data: AddServerRequest) => {
   const request = {
     ...data,
@@ -549,6 +580,7 @@ export const delete_server = async (
   return client.submit(request);
 };
 
+/** send a mobilecoin payment */
 export const send_payment = async (
   client: Client,
   data: SendPaymentRequest
@@ -562,6 +594,7 @@ export const send_payment = async (
   return client.submit<SendResponse>(request);
 };
 
+/** Retrieves the remote config (feature flags) from the server. */
 export const get_remote_config = async (
   client: Client,
   data: RemoteConfigRequest
@@ -575,6 +608,7 @@ export const get_remote_config = async (
   return client.submit<RemoteConfigList>(request);
 };
 
+/** deny a request to join a group */
 export const refuse_membership = async (
   client: Client,
   data: RefuseMembershipRequest
@@ -601,6 +635,7 @@ export const submit_challenge = async (
   return client.submit(request);
 };
 
+/** Determine whether an account identifier is registered on the Signal service. */
 export const is_identifier_registered = async (
   client: Client,
   data: IsIdentifierRegisteredRequest
@@ -614,6 +649,7 @@ export const is_identifier_registered = async (
   return client.submit<BooleanMessage>(request);
 };
 
+/** An optional part of the linking process. Intended to be called after displaying the QR code, will return quickly after the user scans the QR code. finish_link must be called after wait_for_scan returns a non-error */
 export const wait_for_scan = async (
   client: Client,
   data: WaitForScanRequest
@@ -627,6 +663,7 @@ export const wait_for_scan = async (
   return client.submit(request);
 };
 
+/** Query the server for group revision history. The history contains information about the changes between each revision and the user that made the change. */
 export const get_group_revision_pages = async (
   client: Client,
   data: GetGroupRevisionPagesRequest
@@ -640,6 +677,7 @@ export const get_group_revision_pages = async (
   return client.submit<GroupHistoryPage>(request);
 };
 
+/** Sends a sync message to the account's devices */
 export const send_sync_message = async (
   client: Client,
   data: SendSyncMessageRequest
@@ -653,6 +691,7 @@ export const send_sync_message = async (
   return client.submit<JsonSendMessageResult>(request);
 };
 
+/** Bans users from a group. This works even if the users aren't in the group. If they are currently in the group, they will also be removed. */
 export const ban_user = async (client: Client, data: BanUserRequest) => {
   const request = {
     ...data,
@@ -663,6 +702,7 @@ export const ban_user = async (client: Client, data: BanUserRequest) => {
   return client.submit<JsonGroupV2Info>(request);
 };
 
+/** Unbans users from a group. */
 export const unban_user = async (client: Client, data: UnbanUserRequest) => {
   const request = {
     ...data,

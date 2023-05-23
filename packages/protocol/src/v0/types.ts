@@ -136,6 +136,7 @@ export type JsonGroupV2Info = {
   pendingMemberDetail: GroupMember[];
 };
 
+/** A quote is a reply to a previous message. ID is the sent time of the message being replied to */
 export type JsonQuote = {
   id: number;
   author: JsonAddress;
@@ -270,6 +271,7 @@ export type JsonQuotedAttachment = {
   thumbnail: JsonAttachment;
 };
 
+/** group access control settings. Options for each controlled action are: UNKNOWN, ANY, MEMBER, ADMINISTRATOR, UNSATISFIABLE and UNRECOGNIZED */
 export type GroupAccessControl = {
   link: string;
   attributes: string;

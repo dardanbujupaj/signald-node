@@ -1,0 +1,17 @@
+services:
+  signald:
+    image: signald/signald
+    volumes:
+      - signald:/signald
+  socket:
+    image: alpine/socat
+    depends_on:
+      - signald
+    ports:
+      - 12345:12345
+    command: tcp-listen:12345,fork,reuseaddr unix-connect:/signald/signald.sock
+    volumes:
+      - signald:/signald
+
+volumes:
+  signald:

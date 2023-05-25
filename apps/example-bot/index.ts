@@ -1,98 +1,66 @@
+import { MessageHandler, SignaldBot } from "@signald-node/bot";
 import { Signald } from "@signald-node/client";
-import {
-  Client,
-  DataMessage,
-  IncomingMessage,
-  Message,
-  list_accounts,
-  send,
-  subscribe,
-} from "@signald-node/protocol";
-import nodeSchedule from "node-schedule";
+import { IncomingMessage, mark_read, react } from "@signald-node/protocol";
 
-type ScheduledRule = {
-  schedule: string;
-  handler: (client: Client) => void;
-};
-type PrefixRule = {
-  prefix: string;
-  handler: (client: Client, message: IncomingMessage) => void;
-};
-
-type Rule = ScheduledRule | PrefixRule;
-
-const isIncomingMessage = (
-  message: Message
-): message is DataMessage<IncomingMessage> => {
-  return message.type === "IncomingMessage";
+/**
+ * Recipient (either groupId or address) to reply to
+ *
+ * @example
+ * const message = // IncomingMessage from signald
+ * const recipient = getReplyRecipient(message)
+ * send(client, {
+ *   account: message.account,
+ *   ...recipient,
+ *   messageBody: "I received your message!"
+ * })
+ */
+const getReplyRecipient = (message: IncomingMessage) => {
+  return message.data_message?.groupV2?.id
+    ? {
+        recipientGroupId: message.data_message.groupV2.id,
+      }
+    : {
+        recipientAddress: message.source,
+      };
 };
 
-async function handleIncomingMessage(
+const handleGreeting: MessageHandler = async (
   client: Signald,
   message: IncomingMessage
-) {
-  const messageContent =
-    message.sync_message?.sent?.message ?? message.data_message;
+) => {
+  const messageContent = message.data_message;
 
-  if (messageContent?.body?.toLocaleLowerCase() === "hello") {
-    const recipient = messageContent.groupV2?.id
-      ? {
-          recipientGroupId: messageContent.groupV2.id,
-        }
-      : {
-          recipientAddress: message.source,
-        };
-    console.log(recipient);
+  if (messageContent?.body?.toLowerCase() === "hello") {
+    const recipient = getReplyRecipient(message);
 
-    send(client, {
-      account: message.account,
+    react(client, {
+      username: message.account!,
       ...recipient,
-      messageBody: "received 👍🏻",
+      reaction: {
+        emoji: "👋",
+        remove: false,
+        targetAuthor: message.source,
+        targetSentTimestamp: messageContent?.timestamp,
+      },
     });
   }
-}
+};
 
-class Bot {
-  private client: Signald;
-  private rules: Rule[];
+const handleMarkRead: MessageHandler = async (
+  client: Signald,
+  message: IncomingMessage
+) => {
+  if (!message.data_message) return;
+  mark_read(client, {
+    account: message.account!,
+    to: message.source!,
+    timestamps: [message.data_message.timestamp!],
+  });
+};
 
-  constructor(rules: Rule[]) {
-    this.rules = rules;
-    this.client = new Signald({ host: "0.0.0.0", port: 12345 }, () =>
-      this.onReady()
-    );
-    console.log("🤖 Starting signald bot");
-  }
-
-  private async onReady() {
-    const accountList = await list_accounts(this.client, {});
-    for (const account of accountList.accounts) {
-      console.log(`Subscribe to ${account.account_id}`);
-      subscribe(this.client, {
-        account: account.account_id,
-      });
-    }
-
-    for (const rule of this.rules) {
-      if ("schedule" in rule) {
-        nodeSchedule.scheduleJob(rule.schedule, () =>
-          rule.handler(this.client)
-        );
-      }
-    }
-
-    this.client.subscribe(async (message) => {
-      if (isIncomingMessage(message)) {
-        try {
-          await handleIncomingMessage(this.client, message.data);
-        } catch (error) {
-          console.error(JSON.stringify(error));
-        }
-      }
-    });
-
-    console.log("🤖 Ready!");
-  }
-}
-
-new Bot([]);
+new SignaldBot(process.env.SIGNAL_PHONE_NUMBER!, [handleGreeting, handleMarkRead], {
+  connectOptions: { host: "0.0.0.0", port: 12345 },
+  profile: {
+    name: "🤖 Example Bot",
+  },
+});

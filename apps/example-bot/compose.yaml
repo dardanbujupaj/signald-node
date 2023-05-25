@@ -3,7 +3,7 @@ services:
     image: signald/signald
     volumes:
       - signald:/signald
-  socket:
+  tcp-relay:
     image: alpine/socat
     depends_on:
       - signald

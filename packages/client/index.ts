@@ -20,8 +20,8 @@ export class Signald implements Client {
   private socket: Socket;
   private messageEmitter = new EventEmitter();
 
-  constructor(path: string, onConnect?: () => void)
-  constructor(options: NetConnectOpts, onConnect?: () => void)
+  constructor(path: string, onConnect?: () => void);
+  constructor(options: NetConnectOpts, onConnect?: () => void);
   constructor(options: any, onConnect?: () => void) {
     this.socket = createConnection(options, onConnect);
 
@@ -36,8 +36,11 @@ export class Signald implements Client {
       .filter((line) => line !== "")
       .forEach((line) => {
         console.log(`< ${line}`);
-        const message = JSON.parse(line);
+        const message = JSON.parse(line) as Message;
         this.messageEmitter.emit("message", message);
+        if (isIncomingMessage(message)) {
+          this.messageEmitter.emit("incoming_message", message.data);
+        }
       });
   };
 
@@ -56,11 +59,11 @@ export class Signald implements Client {
       const onMessage = (message: Message) => {
         if (message.id === id) {
           resolve(message as Message<TResponse>);
-          this.unsubscribe(onMessage);
+          this.messageEmitter.off("message", onMessage);
         }
       };
 
-      this.subscribe(onMessage);
+      this.messageEmitter.on("message", onMessage);
     });
 
     if (isErrorMessage(response)) {
@@ -71,10 +74,11 @@ export class Signald implements Client {
     return response.data;
   }
 
-  subscribe(handler: (message: Message) => void) {
-    this.messageEmitter.on("message", handler);
+  subscribe(handler: (message: IncomingMessage) => void) {
+    this.messageEmitter.on("incoming_message", handler);
   }
-  unsubscribe(handler: (message: Message) => void) {
-    this.messageEmitter.off("message", handler);
+
+  unsubscribe(handler: (message: IncomingMessage) => void) {
+    this.messageEmitter.off("incoming_message", handler);
   }
 }

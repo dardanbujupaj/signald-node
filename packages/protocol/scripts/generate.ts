@@ -59,17 +59,34 @@ function sanitizeFieldName(name: string) {
   return name;
 }
 
+function generateJSDoc(doc?: string, deprecated?: boolean) {
+  if (doc === undefined && deprecated === undefined) {
+    return "";
+  }
+
+  return (
+    "/**\n" +
+    (doc ? ` * ${doc}\n` : "") +
+    (deprecated ? ` * @deprecated\n` : "") +
+    "*/"
+  );
+}
+
 async function generateType(name: string, typeDefinition: TypeDefinition) {
   const typeFile = `
-${typeDefinition.doc ? `/** ${typeDefinition.doc} */` : ""}
+${generateJSDoc(typeDefinition.doc, typeDefinition.deprecated)}
 export type ${name} = {
 ${Object.entries(typeDefinition.fields)
   .map(([fieldName, fieldDefinition]) => {
     const type = getTypeName(fieldDefinition.type);
 
-    return `  ${sanitizeFieldName(fieldName)}${
-      name.endsWith("Request") && !fieldDefinition.required ? "?" : ""
-    }: ${type}${fieldDefinition.list ? "[]" : ""};`;
+    return (
+      generateJSDoc(fieldDefinition.doc) +
+      (fieldDefinition.doc ? "\n" : "") +
+      `  ${sanitizeFieldName(fieldName)}${
+        !fieldDefinition.required ? "?" : ""
+      }: ${type}${fieldDefinition.list ? "[]" : ""};`
+    );
   })
   .join("\n")}
 }
@@ -148,7 +165,7 @@ async function generate() {
       )
         .map(
           ([version, types]) =>
-            `import { ${types.join(", ")} } from "../${version}/types";`
+            `import { ${types.join(", ")} } from "../${version}/types";\n`
         )
         .join("\n");
 

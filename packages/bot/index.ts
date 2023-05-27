@@ -1,10 +1,10 @@
-import { Signald } from "@signald-node/client";
+import { Signald } from "@signald/client";
 import {
   IncomingMessage,
   SetProfile,
   set_profile,
   subscribe,
-} from "@signald-node/protocol";
+} from "@signald/protocol";
 
 export type MessageHandler = (
   client: Signald,

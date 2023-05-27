@@ -16,13 +16,13 @@ importers:
 
   apps/example-bot:
     dependencies:
-      '@signald-node/bot':
+      '@signald/bot':
         specifier: workspace:*
         version: link:../../packages/bot
-      '@signald-node/client':
+      '@signald/client':
         specifier: workspace:*
         version: link:../../packages/client
-      '@signald-node/protocol':
+      '@signald/protocol':
         specifier: workspace:*
         version: link:../../packages/protocol
     devDependencies:
@@ -41,10 +41,10 @@ importers:
 
   packages/bot:
     dependencies:
-      '@signald-node/client':
+      '@signald/client':
         specifier: workspace:*
         version: link:../client
-      '@signald-node/protocol':
+      '@signald/protocol':
         specifier: workspace:*
         version: link:../protocol
     devDependencies:
@@ -63,7 +63,7 @@ importers:
 
   packages/client:
     dependencies:
-      '@signald-node/protocol':
+      '@signald/protocol':
         specifier: workspace:*
         version: link:../protocol
     devDependencies:

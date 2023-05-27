@@ -1,4 +1,4 @@
-# @signald-node/client
+# @signald/client
 
 ## 0.0.1
 

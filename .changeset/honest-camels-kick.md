@@ -5,4 +5,4 @@
 "@signald/bot": patch
 ---
 
-add package readme
+move packages to @signald namespace

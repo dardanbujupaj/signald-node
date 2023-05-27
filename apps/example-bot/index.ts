@@ -1,6 +1,6 @@
-import { MessageHandler, SignaldBot } from "@signald-node/bot";
-import { Signald, getReplyRecipient } from "@signald-node/client";
-import { IncomingMessage, mark_read, react } from "@signald-node/protocol";
+import { MessageHandler, SignaldBot } from "@signald/bot";
+import { Signald, getReplyRecipient } from "@signald/client";
+import { IncomingMessage, mark_read, react } from "@signald/protocol";
 
 const handleGreeting: MessageHandler = async (
   client: Signald,

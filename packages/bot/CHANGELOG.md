@@ -1,8 +1,8 @@
-# @signald-node/bot
+# @signald/bot
 
 ## 0.0.1
 
 ### Patch Changes
 
 - Updated dependencies [5e075a9]
-  - @signald-node/client@0.0.1
+  - @signald/client@0.0.1

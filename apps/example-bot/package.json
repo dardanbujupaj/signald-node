@@ -1,5 +1,5 @@
 {
-  "name": "@signald-node/example-bot",
+  "name": "@signald/example-bot",
   "version": "0.0.1",
   "main": "./index.ts",
   "types": "./index.ts",
@@ -17,8 +17,8 @@
     "typescript": "5.0.4"
   },
   "dependencies": {
-    "@signald-node/bot": "workspace:*",
-    "@signald-node/client": "workspace:*",
-    "@signald-node/protocol": "workspace:*"
+    "@signald/bot": "workspace:*",
+    "@signald/client": "workspace:*",
+    "@signald/protocol": "workspace:*"
   }
 }

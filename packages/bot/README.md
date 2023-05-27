@@ -1,9 +1,9 @@
-# @signald-node/bot
+# @signald/bot
 
 ## Installation
 
 ```
-`npm install @signald-node/bot @signald-node/protocol`
+`npm install @signald/bot @signald/protocol`
 ```
 
 ## Usage
@@ -12,9 +12,9 @@
 2. Initialize the bot with the registered phone number and any message handlers you want use
 
 ```
-import { MessageHandler, SignaldBot } from "@signald-node/bot";
-import { getReplyRecipient } from "@signald-node/client";
-import { react } from "@signald-node/protocol";
+import { MessageHandler, SignaldBot } from "@signald/bot";
+import { getReplyRecipient } from "@signald/client";
+import { react } from "@signald/protocol";
 
 export const handleThumbsUp: MessageHandler = async (client, message) => {
   const recipient = getReplyRecipient(message);

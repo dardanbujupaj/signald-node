@@ -5,7 +5,7 @@ import {
   Message,
   Request,
   isErrorMessage,
-} from "@signald-node/protocol";
+} from "@signald/protocol";
 import { randomUUID } from "crypto";
 import EventEmitter from "events";
 import { NetConnectOpts, Socket, createConnection } from "net";

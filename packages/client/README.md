@@ -1,16 +1,16 @@
-# @signald-node/client
+# @signald/client
 
 ## Installation
 
 ```
-`npm install @signald-node/client @signald-node/protocol`
+`npm install @signald/client @signald/protocol`
 ```
 
 ## Usage
 
 ```
-import { Signald } from "@signald-node/client";
-import { list_accounts } from "@signald-node/protocol";
+import { Signald } from "@signald/client";
+import { list_accounts } from "@signald/protocol";
 
 const client = new Signald("/signald/signald.sock" as any, () => onReady());
 

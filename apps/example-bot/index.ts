@@ -1,11 +1,7 @@
 import { MessageHandler, SignaldBot } from "@signald/bot";
-import { Signald, getReplyRecipient } from "@signald/client";
-import { IncomingMessage, mark_read, react } from "@signald/protocol";
+import { getReplyRecipient, mark_read, react } from "@signald/protocol";
 
-const handleGreeting: MessageHandler = async (
-  client: Signald,
-  message: IncomingMessage
-) => {
+const handleGreeting: MessageHandler = async (client, message) => {
   const messageContent = message.data_message;
 
   if (messageContent?.body?.toLowerCase() === "hello") {
@@ -24,10 +20,7 @@ const handleGreeting: MessageHandler = async (
   }
 };
 
-const handleMarkRead: MessageHandler = async (
-  client: Signald,
-  message: IncomingMessage
-) => {
+const handleMarkRead: MessageHandler = async (client, message) => {
   if (!message.data_message) return;
   mark_read(client, {
     account: message.account!,

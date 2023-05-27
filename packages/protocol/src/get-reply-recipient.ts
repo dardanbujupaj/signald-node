@@ -1,4 +1,4 @@
-import { IncomingMessage } from "@signald/protocol";
+import { IncomingMessage } from "./v1/types";
 
 /**
  * Recipient (either groupId or address) to reply to

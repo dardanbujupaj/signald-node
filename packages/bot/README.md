@@ -13,8 +13,7 @@
 
 ```
 import { MessageHandler, SignaldBot } from "@signald/bot";
-import { getReplyRecipient } from "@signald/client";
-import { react } from "@signald/protocol";
+import { getReplyRecipient, react } from "@signald/protocol";
 
 export const handleThumbsUp: MessageHandler = async (client, message) => {
   const recipient = getReplyRecipient(message);

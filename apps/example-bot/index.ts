@@ -1,28 +1,6 @@
 import { MessageHandler, SignaldBot } from "@signald-node/bot";
-import { Signald } from "@signald-node/client";
+import { Signald, getReplyRecipient } from "@signald-node/client";
 import { IncomingMessage, mark_read, react } from "@signald-node/protocol";
-
-/**
- * Recipient (either groupId or address) to reply to
- *
- * @example
- * const message = // IncomingMessage from signald
- * const recipient = getReplyRecipient(message)
- * send(client, {
- *   account: message.account,
- *   ...recipient,
- *   messageBody: "I received your message!"
- * })
- */
-const getReplyRecipient = (message: IncomingMessage) => {
-  return message.data_message?.groupV2?.id
-    ? {
-        recipientGroupId: message.data_message.groupV2.id,
-      }
-    : {
-        recipientAddress: message.source,
-      };
-};
 
 const handleGreeting: MessageHandler = async (
   client: Signald,
@@ -58,9 +36,13 @@ const handleMarkRead: MessageHandler = async (
   });
 };
 
-new SignaldBot(process.env.SIGNAL_PHONE_NUMBER!, [handleGreeting, handleMarkRead], {
-  connectOptions: { host: "0.0.0.0", port: 12345 },
-  profile: {
-    name: "🤖 Example Bot",
-  },
-});
+new SignaldBot(
+  process.env.SIGNAL_PHONE_NUMBER!,
+  [handleGreeting, handleMarkRead],
+  {
+    connectOptions: { host: "0.0.0.0", port: 12345 },
+    profile: {
+      name: "🤖 Example Bot",
+    },
+  }
+);

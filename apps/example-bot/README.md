@@ -1,6 +1,6 @@
 ## Setup example bot
 
-1. Setup Signald instance and tcp relay:
+1. Setup signald instance and tcp relay:
 
 ```
 cd apps/example-bot
